@@ -30,7 +30,7 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
         // Send a ping to confirm a successful connection
-        const bookCollections = client.db("bookInventory").collection("books");
+        const bookCollections = client.db("BookInventory").collection("Books");
 
 
         // insert a book to db: Post Method
@@ -47,6 +47,16 @@ async function run() {
         //     const result = await books.toArray();
         //     res.send(result)
         // })
+
+        // get all books & find by a category from db
+        app.get("/all-books", async (req, res) => {
+            let query = {};
+            if (req.query?.category) {
+                query = { category: req.query.category }
+            }
+            const result = await bookCollections.find(query).toArray();
+            res.send(result)
+        })
 
         // update a books method
         app.patch("/book/:id", async (req, res) => {
@@ -81,16 +91,6 @@ async function run() {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
             const result = await bookCollections.findOne(filter);
-            res.send(result)
-        })
-
-        // find by a category
-        app.get("/all-books", async(req, res) => {
-            let query = {};
-            if(req.query?.category){
-                query = {category: req.query.category}
-            }
-            const result = await bookCollections.find(query).toArray();
             res.send(result)
         })
 
